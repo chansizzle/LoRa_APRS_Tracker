@@ -8,7 +8,7 @@ function backupSettings() {
         encodeURIComponent(JSON.stringify(currentSettings));
     const a = document.createElement("a");
     a.setAttribute("href", data);
-    a.setAttribute("download", "iGateConfigurationBackup.json");
+    a.setAttribute("download", "trackerConfigurationBackup.json");
     a.click();
 }
 

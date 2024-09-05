@@ -67,7 +67,7 @@ namespace WEB_Utils {
         //if(Config.webadmin.active && !request->authenticate(Config.webadmin.username.c_str(), Config.webadmin.password.c_str()))
         //    return request->requestAuthentication();
 
-        File file = SPIFFS.open("/igate_conf.json");
+        File file = SPIFFS.open("/tracker_conf.json");
         
         String fileContent;
         while(file.available()){
@@ -110,7 +110,7 @@ namespace WEB_Utils {
             beacon.overlay                  = request->getParam("overlay", true)->value();
             beacon.comment                  = request->getParam("callsign", true)->value();
             beacon.smartBeaconActive        = request->hasParam("smartBeaconActive", true);
-            beacon.smartBeaconSetting       = request->getParam("smartBeaconSetting", true)->value();               = 
+            beacon.smartBeaconSetting       = (byte)request->getParam("smartBeaconSetting", true)->value().toInt();
             beacon.micE                     = request->getParam("micE", true)->value();
             beacon.gpsEcoMode               = request->hasParam("gpsEcoMode", true);
             Config.beacons.push_back(beacon);
