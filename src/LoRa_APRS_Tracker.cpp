@@ -47,7 +47,7 @@ TinyGPSPlus                         gps;
     OneButton userButton            = OneButton(BUTTON_PIN, true, true);
 #endif
 
-String      versionDate             = "2024.08.27";
+String      versionDate             = "2024.09.05";
 
 uint8_t     myBeaconsIndex          = 0;
 int         myBeaconsSize           = Config.beacons.size();
@@ -114,16 +114,26 @@ void setup() {
     STATION_Utils::nearTrackerInit();
     startupScreen(loraIndex, versionDate);
 
+    if (Config.wifiAP.active){
+        displayShow(" WEB-CONF","", "WiFi AP: LoRa Tracker", "IP:       192.168.4.1","", "");
+        logger.log(logging::LoggerLevel::LOGGER_LEVEL_WARN, "Main", "WebConfiguration Started!");
+        
+        while (true) {      // comienza web config
+            // algo
+        } 
+
+    } else {
+        WiFi.mode(WIFI_OFF);
+        logger.log(logging::LoggerLevel::LOGGER_LEVEL_DEBUG, "Main", "WiFi controller stopped");
+    }
+
     MSG_Utils::loadNumMessages();
     GPS_Utils::setup();
     currentLoRaType = &Config.loraTypes[loraIndex];
     LoRa_Utils::setup();
     BME_Utils::setup();
     
-    ackRequestNumber = random(1,999);
-
-    WiFi.mode(WIFI_OFF);
-    logger.log(logging::LoggerLevel::LOGGER_LEVEL_DEBUG, "Main", "WiFi controller stopped");
+    ackRequestNumber = random(1,999);    
 
     if (Config.bluetoothType == 0 || Config.bluetoothType == 2) {
         BLE_Utils::setup();

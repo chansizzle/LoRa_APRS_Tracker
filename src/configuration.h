@@ -5,6 +5,12 @@
 #include <vector>
 #include <FS.h>
 
+class WiFiAP {
+public:
+    bool    active;
+    String  password;
+};
+
 class Beacon {
 public:
     String  callsign;
@@ -77,6 +83,7 @@ public:
 class Configuration {
 public:
 
+    WiFiAP                  wifiAP;
     std::vector<Beacon>     beacons;  
     Display                 display;
     Winlink                 winlink;
@@ -98,13 +105,15 @@ public:
     bool    bluetoothActive;
     bool    disableGPS;
 
+
+    void init();
+    void writeFile();
     Configuration();
     bool validateConfigFile(const String& currentBeaconCallsign);
     bool validateMicE(const String& currentBeaconMicE);
 
 private:
-    void readFile(fs::FS &fs, const char *fileName) ;
-    String _filePath;
+    bool readFile();
 };
 
 #endif
