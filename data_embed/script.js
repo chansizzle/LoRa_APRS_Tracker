@@ -50,7 +50,7 @@ function fetchSettings() {
 }
 
 const alwaysOnCheckbox = document.querySelector(
-    'input[name="display.alwaysOn"]'
+    'input[name="display.ecoMode"]'
 );
 const timeoutInput = document.querySelector('input[name="display.timeout"]');
 
@@ -58,23 +58,11 @@ alwaysOnCheckbox.addEventListener("change", function () {
     timeoutInput.disabled = this.checked;
 });
 
-// timeoutInput.addEventListener("change", function () {
-//     alwaysOnCheckbox.disabled = this.value !== "";
-// });
-
-const logCheckbox = document.querySelector('input[name="syslog.active"]');
-const serverField = document.querySelector('input[name="syslog.server"]');
-const portField = document.querySelector('input[name="syslog.port"]');
-
-logCheckbox.addEventListener("change", function () {
-    serverField.disabled = !this.checked;
-    portField.disabled = !this.checked;
-});
 
 function loadSettings(settings) {
     currentSettings = settings;
     // General
-    document.getElementById("callsign").value                           = settings.callsign;
+    /*document.getElementById("callsign").value                           = settings.callsign;
     document.getElementById("beacon.comment").value                     = settings.beacon.comment;
     document.getElementById("beacon.path").value                        = settings.beacon.path;
     document.getElementById("beacon.symbol").value                      = settings.beacon.symbol;
@@ -82,28 +70,52 @@ function loadSettings(settings) {
     document.getElementById("personalNote").value                       = settings.personalNote;
     document.getElementById("action.symbol").value                      = settings.beacon.overlay + settings.beacon.symbol;
 
-    document.querySelector(".list-networks").innerHTML                  = "";
+    document.querySelector(".list-trackers").innerHTML                  = "";
 
-    // Networks
-    const wifiNetworks = settings.wifi.AP || [];
-    const networksContainer = document.querySelector(".list-networks");
+    // Trackers? Networks
+    const trackers = settings.beacon || [];
+    const trackersContainer = document.querySelector(".list-trackers");
 
-    let networkCount = 0;
+    let trackerCount = 0;
 
-    wifiNetworks.forEach((network) => {
-        const networkElement = document.createElement("div");
-        networkElement.classList.add("row", "network", "border-bottom", "py-2");
+    trackers.forEach((tracker) => {
+        const trackerElement = document.createElement("div");
+        trackerElement.classList.add("row", "tracker", "border-bottom", "py-2");
 
         // Increment the name, id, and for attributes
-        const attributeName = `wifi.AP.${networkCount}`;
-        networkElement.innerHTML = `
+        const attributeName = `beacons.${trackerCount}`;
+        trackerElement.innerHTML = `
                   <div class="form-floating col-5 px-1 mb-2">
-                    <input type="text" class="form-control form-control-sm" name="${attributeName}.ssid" id="${attributeName}.ssid" value="${network.ssid}">
-                    <label for="${attributeName}.ssid">SSID</label>
+                    <input type="text" class="form-control form-control-sm" name="${attributeName}.callsign" id="${attributeName}.callsign" value="${beacon.callsign}">
+                    <label for="${attributeName}.callsign">callsign</label>
                   </div>
                   <div class="form-floating col-5 px-1 mb-2">
-                    <input type="password" class="form-control form-control-sm" name="${attributeName}.password" id="${attributeName}.password" value="${network.password}">
-                    <label for="${attributeName}.password">Passphrase</label>
+                    <input type="text" class="form-control form-control-sm" name="${attributeName}.symbol" id="${attributeName}.symbol" value="${beacon.symbol}">
+                    <label for="${attributeName}.symbol">symbol</label>
+                  </div>
+                  <div class="form-floating col-5 px-1 mb-2">
+                    <input type="text" class="form-control form-control-sm" name="${attributeName}.overlay" id="${attributeName}.overlay" value="${beacon.overlay}">
+                    <label for="${attributeName}.overlay">overlay</label>
+                  </div>
+                  <div class="form-floating col-5 px-1 mb-2">
+                    <input type="text" class="form-control form-control-sm" name="${attributeName}.comment" id="${attributeName}.comment" value="${beacon.comment}">
+                    <label for="${attributeName}.comment">comment</label>
+                  </div>
+                  <div class="form-floating col-5 px-1 mb-2">
+                    <input type="text" class="form-control form-control-sm" name="${attributeName}.smartBeaconActive" id="${attributeName}.smartBeaconActive" value="${beacon.smartBeaconActive}">
+                    <label for="${attributeName}.smartBeaconActive">smartBeaconActive</label>
+                  </div>
+                  <div class="form-floating col-5 px-1 mb-2">
+                    <input type="text" class="form-control form-control-sm" name="${attributeName}.smartBeaconSetting" id="${attributeName}.smartBeaconSetting" value="${beacon.smartBeaconSetting}">
+                    <label for="${attributeName}.smartBeaconSetting">smartBeaconSetting</label>
+                  </div>
+                  <div class="form-floating col-5 px-1 mb-2">
+                    <input type="text" class="form-control form-control-sm" name="${attributeName}.micE" id="${attributeName}.micE" value="${beacon.micE}">
+                    <label for="${attributeName}.micE">micE</label>
+                  </div>
+                  <div class="form-floating col-5 px-1 mb-2">
+                    <input type="text" class="form-control form-control-sm" name="${attributeName}.gpsEcoMode" id="${attributeName}.gpsEcoMode" value="${beacon.gpsEcoMode}">
+                    <label for="${attributeName}.gpsEcoMode">gpsEcoMode</label>
                   </div>
                   <div class="col-2 d-flex align-items-center justify-content-end">
                     <div class="btn-group" role="group">
@@ -113,8 +125,8 @@ function loadSettings(settings) {
                     </div>
                   </div>
                 `;
-        networksContainer.appendChild(networkElement);
-        networkCount++;
+        trackersContainer.appendChild(trackerElement);
+        trackerCount++;
     });
 
     // APRS-IS
@@ -134,9 +146,6 @@ function loadSettings(settings) {
     document.getElementById("beacon.sendViaAPRSIS").checked             = settings.beacon.sendViaAPRSIS;
     document.getElementById("beacon.sendViaRF").checked                 = settings.beacon.sendViaRF;
 
-    // Digi
-    document.getElementById("digi.mode").value                          = settings.digi.mode;
-
     // LoRa
     document.getElementById("lora.txFreq").value                        = settings.lora.txFreq;
     document.getElementById("lora.rxFreq").value                        = settings.lora.rxFreq;
@@ -145,75 +154,29 @@ function loadSettings(settings) {
     document.getElementById("lora.spreadingFactor").value               = settings.lora.spreadingFactor;
     document.getElementById("lora.signalBandwidth").value               = settings.lora.signalBandwidth;
     document.getElementById("lora.codingRate4").value                   = settings.lora.codingRate4;
-    document.getElementById("lora.power").value                         = settings.lora.power;
+    document.getElementById("lora.power").value                         = settings.lora.power;*/
 
     // Display
-    document.getElementById("display.alwaysOn").checked                 = settings.display.alwaysOn;
-    document.getElementById("display.turn180").checked                  = settings.display.turn180;
+    document.getElementById("display.showSymbol").checked               = settings.display.showSymbol;
+    document.getElementById("display.ecoMode").checked                  = settings.display.ecoMode;
     document.getElementById("display.timeout").value                    = settings.display.timeout;
-
-    if (settings.display.alwaysOn) {
-        timeoutInput.disabled = true;
+    document.getElementById("display.turn180").checked                  = settings.display.turn180;
+    
+    if (settings.display.ecoMode) {
+        timeoutInput.disabled = false;
     }
 
-    // BATTERY
-    document.getElementById("battery.sendInternalVoltage").checked      = settings.battery.sendInternalVoltage;
-    document.getElementById("battery.monitorInternalVoltage").checked   = settings.battery.monitorInternalVoltage;
-    document.getElementById("battery.internalSleepVoltage").value       = settings.battery.internalSleepVoltage.toFixed(1);
-    document.getElementById("battery.sendExternalVoltage").checked      = settings.battery.sendExternalVoltage;
-    document.getElementById("battery.externalVoltagePin").value         = settings.battery.externalVoltagePin;
-    document.getElementById("battery.voltageDividerR1").value                 = settings.battery.voltageDividerR1.toFixed(1);
-    document.getElementById("battery.voltageDividerR2").value                 = settings.battery.voltageDividerR2.toFixed(1);
-    document.getElementById("battery.monitorExternalVoltage").checked   = settings.battery.monitorExternalVoltage;
-    document.getElementById("battery.externalSleepVoltage").value       = settings.battery.externalSleepVoltage.toFixed(1);
-    
+    // WINLINK
+    document.getElementById("winlink.password").value                   = settings.winlink.password;
+
+
     // TELEMETRY BME/WX
-    document.getElementById("bme.active").checked                       = settings.bme.active;
-    document.getElementById("bme.heightCorrection").value               = settings.bme.heightCorrection;
+    /*document.getElementById("bme.active").checked                       = settings.bme.active;
     document.getElementById("bme.temperatureCorrection").value          = settings.bme.temperatureCorrection.toFixed(1);
-    
-    // SYSLOG
-    document.getElementById("syslog.active").checked                    = settings.syslog.active;
-    document.getElementById("syslog.server").value                      = settings.syslog.server;
-    document.getElementById("syslog.port").value                        = settings.syslog.port;
+    document.getElementById("bme.sendTelemetry").checked                = settings.bme.sendTelemetry;*/
 
-    if (settings.syslog.active) {
-        serverField.disabled = false;
-        portField.disabled = false;
-    }
-
-    // TNC
-    if (settings.tnc) {
-        document.getElementById("tnc.enableServer").checked             = settings.tnc.enableServer;
-        document.getElementById("tnc.enableSerial").checked             = settings.tnc.enableSerial;
-        document.getElementById("tnc.acceptOwn").checked                = settings.tnc.acceptOwn;
-    }
-
-    // Reboot
-    document.getElementById("other.rebootMode").checked                 = settings.other.rebootMode;
-    document.getElementById("other.rebootModeTime").value               = settings.other.rebootModeTime;
-
-    // WiFi Auto AP
-    document.getElementById("wifi.autoAP.password").value               = settings.wifi.autoAP.password;
-    document.getElementById("wifi.autoAP.powerOff").value               = settings.wifi.autoAP.powerOff;
-
-    // OTA
-    document.getElementById("ota.username").value                       = settings.ota.username;
-    document.getElementById("ota.password").value                       = settings.ota.password;
-
-    // Webadmin
-    document.getElementById("webadmin.active").checked                  = settings.webadmin.active;
-    document.getElementById("webadmin.username").value                  = settings.webadmin.username;
-    document.getElementById("webadmin.password").value                  = settings.webadmin.password;
-
-    // Experimental
-    document.getElementById("other.backupDigiMode").checked             = settings.other.backupDigiMode;
-
-    document.getElementById("other.lowPowerMode").checked               = settings.other.lowPowerMode;
-    document.getElementById("other.lowVoltageCutOff").value             = settings.other.lowVoltageCutOff || 0
-
-    updateImage();
-    refreshSpeedStandard();
+    //updateImage();
+    //refreshSpeedStandard();
     toggleFields();
 }
 
@@ -243,9 +206,7 @@ document.getElementById('reboot').addEventListener('click', function (e) {
 
 const bmeCheckbox = document.querySelector("input[name='bme.active']");
 
-const stationModeSelect = document.querySelector("select[name='stationMode']");
-
-function updateImage() {
+/*function updateImage() {
     const value = document.getElementById("beacon.overlay").value + document.getElementById("beacon.symbol").value;
 
     const image = document.querySelector("img");
@@ -268,109 +229,74 @@ function updateImage() {
                 "data:image/png;base64,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";
             break;
     }
-}
+}*/
 
-function toggleFields() {
-    const sendExternalVoltageCheckbox = document.querySelector(
-        'input[name="battery.sendExternalVoltage"]'
-    );
-    const externalVoltagePinInput = document.querySelector(
-        'input[name="battery.externalVoltagePin"]'
-    );
+//
+function toggleFields() {}
+//
 
-    externalVoltagePinInput.disabled = !sendExternalVoltageCheckbox.checked;
-    voltageDividerR1.disabled = !sendExternalVoltageCheckbox.checked;
-    voltageDividerR2.disabled = !sendExternalVoltageCheckbox.checked;
 
-    const WebadminCheckbox = document.querySelector(
-        'input[name="webadmin.active"]'
-    );
+/*document.querySelector(".new button").addEventListener("click", function () {
+    const trackersContainer = document.querySelector(".list-trackers");
 
-    const WebadminUsername = document.querySelector(
-        'input[name="webadmin.username"]'
-    );
+    let trackerCount = document.querySelectorAll(".tracker").length;
 
-    const WebadminPassword = document.querySelector(
-        'input[name="webadmin.password"]'
-    );
-    WebadminUsername.disabled = !WebadminCheckbox.checked;
-    WebadminPassword.disabled = !WebadminCheckbox.checked;
-}
+    const trackerElement = document.createElement("div");
 
-const sendExternalVoltageCheckbox = document.querySelector(
-    'input[name="battery.sendExternalVoltage"]'
-);
-const externalVoltagePinInput = document.querySelector(
-    'input[name="battery.externalVoltagePin"]'
-);
-
-const voltageDividerR1 = document.querySelector(
-    'input[name="battery.voltageDividerR1"]'
-);
-
-const voltageDividerR2 = document.querySelector(
-    'input[name="battery.voltageDividerR2"]'
-);
-
-sendExternalVoltageCheckbox.addEventListener("change", function () {
-    externalVoltagePinInput.disabled = !this.checked;
-    voltageDividerR1.disabled = !this.checked;
-    voltageDividerR2.disabled = !this.checked;
-});
-
-const WebadminCheckbox = document.querySelector(
-    'input[name="webadmin.active"]'
-);
-
-const WebadminUsername = document.querySelector(
-    'input[name="webadmin.username"]'
-);
-
-const WebadminPassword = document.querySelector(
-    'input[name="webadmin.password"]'
-);
-WebadminCheckbox.addEventListener("change", function () {
-    WebadminUsername.disabled = !this.checked;
-    WebadminPassword.disabled = !this.checked;
-});
-
-document.querySelector(".new button").addEventListener("click", function () {
-    const networksContainer = document.querySelector(".list-networks");
-
-    let networkCount = document.querySelectorAll(".network").length;
-
-    const networkElement = document.createElement("div");
-
-    networkElement.classList.add("row", "network", "border-bottom", "py-2");
+    trackerElement.classList.add("row", "tracker", "border-bottom", "py-2");
 
     // Increment the name, id, and for attributes
-    const attributeName = `wifi.AP.${networkCount}`;
-    networkElement.innerHTML = `
-                <div class="form-floating col-6 col-md-5 px-1 mb-2">
-                <input type="text" class="form-control form-control-sm" name="${attributeName}.ssid" id="${attributeName}.ssid" placeholder="" >
-                <label for="${attributeName}.ssid">SSID</label>
-                </div>
-                <div class="form-floating col-6 col-md-5 px-1 mb-2">
-                <input type="password" class="form-control form-control-sm" name="${attributeName}.password" id="${attributeName}.password" placeholder="">
-                <label for="${attributeName}.password">Passphrase</label>
-                </div>
-                <div class="col-4 col-md-2 d-flex align-items-center justify-content-end">
-                <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-sm btn-danger" title="Delete" onclick="return this.parentNode.parentNode.parentNode.remove();"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
-            <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5"/>
-        </svg><span class="visually-hidden">Delete</span></button>
-                </div>
-                </div>
-            `;
-    networksContainer.appendChild(networkElement);
+    const attributeName = `beacons.${trackerCount}`;
+    trackerElement.innerHTML = `
+                  <div class="form-floating col-5 px-1 mb-2">
+                    <input type="text" class="form-control form-control-sm" name="${attributeName}.callsign" id="${attributeName}.callsign" value="${beacon.callsign}">
+                    <label for="${attributeName}.callsign">callsign</label>
+                  </div>
+                  <div class="form-floating col-5 px-1 mb-2">
+                    <input type="text" class="form-control form-control-sm" name="${attributeName}.symbol" id="${attributeName}.symbol" value="${beacon.symbol}">
+                    <label for="${attributeName}.symbol">symbol</label>
+                  </div>
+                  <div class="form-floating col-5 px-1 mb-2">
+                    <input type="text" class="form-control form-control-sm" name="${attributeName}.overlay" id="${attributeName}.overlay" value="${beacon.overlay}">
+                    <label for="${attributeName}.overlay">overlay</label>
+                  </div>
+                  <div class="form-floating col-5 px-1 mb-2">
+                    <input type="text" class="form-control form-control-sm" name="${attributeName}.comment" id="${attributeName}.comment" value="${beacon.comment}">
+                    <label for="${attributeName}.comment">comment</label>
+                  </div>
+                  <div class="form-floating col-5 px-1 mb-2">
+                    <input type="text" class="form-control form-control-sm" name="${attributeName}.smartBeaconActive" id="${attributeName}.smartBeaconActive" value="${beacon.smartBeaconActive}">
+                    <label for="${attributeName}.smartBeaconActive">smartBeaconActive</label>
+                  </div>
+                  <div class="form-floating col-5 px-1 mb-2">
+                    <input type="text" class="form-control form-control-sm" name="${attributeName}.smartBeaconSetting" id="${attributeName}.smartBeaconSetting" value="${beacon.smartBeaconSetting}">
+                    <label for="${attributeName}.smartBeaconSetting">smartBeaconSetting</label>
+                  </div>
+                  <div class="form-floating col-5 px-1 mb-2">
+                    <input type="text" class="form-control form-control-sm" name="${attributeName}.micE" id="${attributeName}.micE" value="${beacon.micE}">
+                    <label for="${attributeName}.micE">micE</label>
+                  </div>
+                  <div class="form-floating col-5 px-1 mb-2">
+                    <input type="text" class="form-control form-control-sm" name="${attributeName}.gpsEcoMode" id="${attributeName}.gpsEcoMode" value="${beacon.gpsEcoMode}">
+                    <label for="${attributeName}.gpsEcoMode">gpsEcoMode</label>
+                  </div>
+                  <div class="col-2 d-flex align-items-center justify-content-end">
+                    <div class="btn-group" role="group">
+                      <button type="button" class="btn btn-sm btn-danger" title="Delete" onclick="return this.parentNode.parentNode.parentNode.remove();"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
+              <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5"/>
+            </svg><span class="visually-hidden">Delete</span></button>
+                    </div>
+                  </div>
+                `;
+    trackersContainer.appendChild(trackerElement);
 
-    networkCount++;
+    trackerCount++;
 
     // Add the new network element to the end of the document
-    document.querySelector(".new").before(networkElement);
-});
+    document.querySelector(".new").before(trackerElement);
+});*/
 
-document
+/*document
     .getElementById("action.symbol")
     .addEventListener("change", function () {
         const value = document.getElementById("action.symbol").value;
@@ -379,18 +305,18 @@ document
         document.getElementById("beacon.symbol").value = value[1];
 
         updateImage();
-    });
+    });*/
 
-const speedStandards = {
+/*const speedStandards = {
     300: [125, 5, 12],
     244: [125, 6, 12],
     209: [125, 7, 12],
     183: [125, 8, 12],
     610: [125, 8, 10],
     1200: [125, 7, 9],
-};
+};*/
 
-function refreshSpeedStandard() {
+/*function refreshSpeedStandard() {
     const bw = Number(document.getElementById("lora.signalBandwidth").value);
     const cr4 = Number(document.getElementById("lora.codingRate4").value);
     const sf = Number(document.getElementById("lora.spreadingFactor").value);
@@ -413,9 +339,9 @@ function refreshSpeedStandard() {
     if (!found) {
         document.getElementById("action.speed").value = "";
     }
-}
+}*/
 
-document
+/*document
     .getElementById("lora.signalBandwidth")
     .addEventListener("focusout", refreshSpeedStandard);
 document
@@ -439,7 +365,7 @@ document.getElementById("action.speed").addEventListener("change", function () {
         document.getElementById("lora.codingRate4").value = cr4;
         document.getElementById("lora.spreadingFactor").value = sf;
     }
-});
+});*/
 
 const form = document.querySelector("form");
 
@@ -478,8 +404,8 @@ function checkConnection() {
 form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    document.getElementById("wifi.APs").value =
-        document.querySelectorAll(".network").length;
+    document.getElementById("beacons").value =
+        document.querySelectorAll(".tracker").length;
 
     fetch(form.action, {
         method: form.method,
@@ -493,7 +419,7 @@ form.addEventListener("submit", async (event) => {
 
 fetchSettings();
 
-function loadReceivedPackets(packets) {
+/*function loadReceivedPackets(packets) {
     if (packets) {
         document.querySelector('#received-packets tbody').innerHTML = '';
 
@@ -546,4 +472,4 @@ document.querySelector('a[href="/received-packets"]').addEventListener('click', 
     document.querySelector('button[type=submit]').remove();
 
     fetchReceivedPackets();
-})
+})*/

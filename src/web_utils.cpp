@@ -1,13 +1,10 @@
 #include <ArduinoJson.h>
 #include "configuration.h"
-//#include "ota_utils.h"
 #include "web_utils.h"
 #include "display.h"
 #include "utils.h"
 
 extern Configuration               Config;
-extern uint32_t                    lastBeaconTx;
-//extern std::vector<ReceivedPacket> receivedPackets;
 
 extern const char web_index_html[] asm("_binary_data_embed_index_html_gz_start");
 extern const char web_index_html_end[] asm("_binary_data_embed_index_html_gz_end");
@@ -49,8 +46,6 @@ namespace WEB_Utils {
     }
 
     void handleHome(AsyncWebServerRequest *request) {
-        //if(Config.webadmin.active && !request->authenticate(Config.webadmin.username.c_str(), Config.webadmin.password.c_str()))
-        //    return request->requestAuthentication();
 
         AsyncWebServerResponse *response = request->beginResponse_P(200, "text/html", (const uint8_t*)web_index_html, web_index_html_len);
         response->addHeader("Content-Encoding", "gzip");
@@ -64,8 +59,6 @@ namespace WEB_Utils {
     }
 
     void handleReadConfiguration(AsyncWebServerRequest *request) {
-        //if(Config.webadmin.active && !request->authenticate(Config.webadmin.username.c_str(), Config.webadmin.password.c_str()))
-        //    return request->requestAuthentication();
 
         File file = SPIFFS.open("/tracker_conf.json");
         
@@ -78,14 +71,7 @@ namespace WEB_Utils {
     }
 
     void handleReceivedPackets(AsyncWebServerRequest *request) {
-        StaticJsonDocument<1536> data;
-
-        /*for (int i = 0; i < receivedPackets.size(); i++) {
-            data[i]["millis"] = receivedPackets[i].millis;
-            data[i]["packet"] = receivedPackets[i].packet;
-            data[i]["RSSI"] = receivedPackets[i].RSSI;
-            data[i]["SNR"] = receivedPackets[i].SNR;
-        }*/
+        StaticJsonDocument<2048> data;
 
         String buffer;
 
@@ -97,24 +83,7 @@ namespace WEB_Utils {
     void handleWriteConfiguration(AsyncWebServerRequest *request) {
         Serial.println("Got new config from www");
 
-        //Config.wifiAP.active  // esto no va en la pagina
-        Config.wifiAP.password              = request->getParam("wifiAPpassword", true)->value();
-
-        int beaconsTotal                    = request->getParam("beacons", true)->value().toInt();
-
-        Config.beacons = {};
-        for (int i = 0; i < beaconsTotal; i++) {
-            Beacon beacon;
-            beacon.callsign                 = request->getParam("callsign", true)->value();
-            beacon.symbol                   = request->getParam("symbol", true)->value();
-            beacon.overlay                  = request->getParam("overlay", true)->value();
-            beacon.comment                  = request->getParam("callsign", true)->value();
-            beacon.smartBeaconActive        = request->hasParam("smartBeaconActive", true);
-            beacon.smartBeaconSetting       = (byte)request->getParam("smartBeaconSetting", true)->value().toInt();
-            beacon.micE                     = request->getParam("micE", true)->value();
-            beacon.gpsEcoMode               = request->hasParam("gpsEcoMode", true);
-            Config.beacons.push_back(beacon);
-        }
+        
 
         Config.display.ecoMode                  = request->hasParam("display.ecoMode", true);
         if (Config.display.ecoMode) {
@@ -125,7 +94,13 @@ namespace WEB_Utils {
 
         Config.winlink.password                 = request->getParam("winlink.password", true)->value();
 
-        Config.bme.active                       = request->hasParam("bme.active", true);
+        Serial.println(Config.display.ecoMode);
+        Serial.println(Config.display.timeout);
+        Serial.println(Config.display.showSymbol);
+        Serial.println(Config.display.turn180);
+        Serial.println(Config.winlink.password);
+
+        /*Config.bme.active                       = request->hasParam("bme.active", true);
         Config.bme.temperatureCorrection        = request->getParam("bme.temperatureCorrection", true)->value().toFloat();
         Config.bme.sendTelemetry                = request->hasParam("bme.sendTelemetry", true);
 
@@ -145,18 +120,6 @@ namespace WEB_Utils {
         Config.notification.lowBatteryBeep      = request->hasParam("notification.lowBatteryBeep", true);
         Config.notification.shutDownBeep        = request->hasParam("notification.shutDownBeep", true);
 
-
-        /*
-        Config.loramodule.txFreq            = request->getParam("lora.txFreq", true)->value().toInt();
-        Config.loramodule.rxFreq            = request->getParam("lora.rxFreq", true)->value().toInt();
-        Config.loramodule.spreadingFactor   = request->getParam("lora.spreadingFactor", true)->value().toInt();
-        Config.loramodule.signalBandwidth   = request->getParam("lora.signalBandwidth", true)->value().toInt();
-        Config.loramodule.codingRate4       = request->getParam("lora.codingRate4", true)->value().toInt();
-        Config.loramodule.power             = request->getParam("lora.power", true)->value().toInt();
-        Config.loramodule.txActive          = request->hasParam("lora.txActive", true);
-        Config.loramodule.rxActive          = request->hasParam("lora.rxActive", true);
-        */
-
         Config.ptt.active                       = request->hasParam("ptt.active", true);
         Config.ptt.io_pin                       = request->getParam("ptt.io_pin", true)->value().toInt();
         Config.ptt.preDelay                     = request->getParam("ptt.preDelay", true)->value().toInt();
@@ -174,7 +137,7 @@ namespace WEB_Utils {
         Config.sendBatteryInfo                  = request->hasParam("other.sendBatteryInfo", true);
         Config.bluetoothType                    = request->getParam("other.bluetoothType", true)->value().toInt();
         Config.bluetoothActive                  = request->hasParam("other.bluetoothActive", true);
-        Config.disableGPS                       = request->hasParam("other.disableGPS", true);
+        Config.disableGPS                       = request->hasParam("other.disableGPS", true);*/
 
         Config.writeFile();
 
@@ -189,7 +152,7 @@ namespace WEB_Utils {
         String type = request->getParam("type", false)->value();
 
         if (type == "send-beacon") {
-            lastBeaconTx = 0;
+            //lastBeaconTx = 0;
 
             request->send(200, "text/plain", "Beacon will be sent in a while");
         } else if (type == "reboot") {
@@ -238,8 +201,6 @@ namespace WEB_Utils {
         server.on("/bootstrap.css", HTTP_GET, handleBootstrapStyle);
         server.on("/bootstrap.js", HTTP_GET, handleBootstrapScript);
         server.on("/favicon.png", HTTP_GET, handleFavicon);
-
-        //OTA_Utils::setup(&server); // Include OTA Updater for WebServer
 
         server.onNotFound(handleNotFound);
 
