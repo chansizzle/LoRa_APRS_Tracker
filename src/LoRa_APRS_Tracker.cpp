@@ -28,6 +28,7 @@ ________________________________________________________________________________
 #include "button_utils.h"
 #include "power_utils.h"
 #include "sleep_utils.h"
+#include "wifi_utils.h"
 #include "menu_utils.h"
 #include "lora_utils.h"
 #include "msg_utils.h"
@@ -117,7 +118,8 @@ void setup() {
     if (Config.wifiAP.active){
         displayShow(" WEB-CONF","", "WiFi AP: LoRa Tracker", "IP:       192.168.4.1","", "");
         logger.log(logging::LoggerLevel::LOGGER_LEVEL_WARN, "Main", "WebConfiguration Started!");
-        
+        WIFI_Utils::startAutoAP();
+
         while (true) {      // comienza web config
             // algo
         } 
