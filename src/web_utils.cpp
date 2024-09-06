@@ -83,23 +83,22 @@ namespace WEB_Utils {
     void handleWriteConfiguration(AsyncWebServerRequest *request) {
         Serial.println("Got new config from www");
 
-        
-
-        Config.display.ecoMode                  = request->hasParam("display.ecoMode", true);
-        if (Config.display.ecoMode) {
-            Config.display.timeout              = request->getParam("display.timeout", true)->value().toInt();
+        if (request->hasParam("display.ecoMode", true)) {
+            Config.display.ecoMode = true;
+            if (request->hasParam("display.timeout", true)) {
+                Config.display.timeout = request->getParam("display.timeout", true)->value().toInt();
+            }
+        } else {
+            Config.display.ecoMode = false;
         }
-        Config.display.turn180                  = request->hasParam("display.turn180", true);
-        Config.display.showSymbol               = request->hasParam("display.showSymbol", true);
 
-        Config.winlink.password                 = request->getParam("winlink.password", true)->value();
+        Config.display.turn180 = request->hasParam("display.turn180", true);
+        Config.display.showSymbol = request->hasParam("display.showSymbol", true);
 
-        Serial.println(Config.display.ecoMode);
-        Serial.println(Config.display.timeout);
-        Serial.println(Config.display.showSymbol);
-        Serial.println(Config.display.turn180);
-        Serial.println(Config.winlink.password);
-
+        if (request->hasParam("winlink.password", true)) {
+            Config.winlink.password = request->getParam("winlink.password", true)->value();
+        }
+        
         /*Config.bme.active                       = request->hasParam("bme.active", true);
         Config.bme.temperatureCorrection        = request->getParam("bme.temperatureCorrection", true)->value().toFloat();
         Config.bme.sendTelemetry                = request->hasParam("bme.sendTelemetry", true);
@@ -145,6 +144,7 @@ namespace WEB_Utils {
         response->addHeader("Location", "/");
         request->send(response);
         displayToggle(false);
+        delay(500);
         ESP.restart();
     }
 

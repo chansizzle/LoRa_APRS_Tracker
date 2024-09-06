@@ -41,11 +41,6 @@
                                     <a class="dropdown-item" href="#" id="reboot">Reboot</a>
                                 </div>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="/received-packets">
-                                    Received packets
-                                </a>
-                            </li>
                         </ul>
                         <div class="d-flex">
                             <button class="btn btn-success my-2 my-sm-0" type="submit">Save</button>
@@ -53,30 +48,6 @@
                     </div>
                 </div>
             </nav>
-            
-            <div class="container d-none" id="received-packets">
-                <div class="row my-5 d-flex align-items-top">
-                    <div class="col-12">
-                        <h3>Last 20 received packets list</h3>
-                        <table class="table mt-4">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Time*</th>
-                                    <th scope="col">Frame</th>
-                                    <th scope="col">RSSI</th>
-                                    <th scope="col">SNR</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                
-                            </tbody>
-                        </table>
-                        <span>List refresh automatically every 15 seconds.</span><br>
-                        <small>* - For now time is measured from board boot up.</small>
-                    </div>
-                </div>
-                <hr />
-            </div>
         
             <div class="container" id="configuration">
                 <main>
@@ -102,63 +73,6 @@
                                     </svg>
                                     Trackers!!!!
                                 </h5>
-                            </div>
-                        </div>
-                        <hr />
-
-                        <div class="row my-5 d-flex align-items-top">
-                            <div class="col-lg-3 col-sm-12">
-                                <h5>
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="20"
-                                        height="20"
-                                        fill="currentColor"
-                                        class="bi bi-router-fill"
-                                        viewBox="0 0 16 16"
-                                    >
-                                        <path
-                                            d="M5.525 3.025a3.5 3.5 0 0 1 4.95 0 .5.5 0 1 0 .707-.707 4.5 4.5 0 0 0-6.364 0 .5.5 0 0 0 .707.707"
-                                        />
-                                        <path
-                                            d="M6.94 4.44a1.5 1.5 0 0 1 2.12 0 .5.5 0 0 0 .708-.708 2.5 2.5 0 0 0-3.536 0 .5.5 0 0 0 .707.707Z"
-                                        />
-                                        <path
-                                            d="M2.974 2.342a.5.5 0 1 0-.948.316L3.806 8H1.5A1.5 1.5 0 0 0 0 9.5v2A1.5 1.5 0 0 0 1.5 13H2a.5.5 0 0 0 .5.5h2A.5.5 0 0 0 5 13h6a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5h.5a1.5 1.5 0 0 0 1.5-1.5v-2A1.5 1.5 0 0 0 14.5 8h-2.306l1.78-5.342a.5.5 0 1 0-.948-.316L11.14 8H4.86zM2.5 11a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1m4.5-.5a.5.5 0 1 1 1 0 .5.5 0 0 1-1 0m2.5.5a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1m1.5-.5a.5.5 0 1 1 1 0 .5.5 0 0 1-1 0m2 0a.5.5 0 1 1 1 0 .5.5 0 0 1-1 0"
-                                        />
-                                        <path
-                                            d="M8.5 5.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"
-                                        />
-                                    </svg>
-                                    Beacons
-                                </h5>
-                                <small
-                                    >beacons......</small
-                                >
-                            </div>
-                            <div class="col-lg-9 col-sm-12">
-                                <input
-                                    type="hidden"
-                                    name="beacons"
-                                    id="beacons"
-                                />
-
-                                <div class="list-networks"></div>
-
-                                <div class="row new">
-                                    <div class="d-grid gap-2">
-                                        <button
-                                            type="button"
-                                            class="btn btn-outline-primary"
-                                            data-toggle="collapse"
-                                            data-target="#add-ap"
-                                            aria-expanded="false"
-                                            aria-controls="add-ap"
-                                        >
-                                            Add network
-                                        </button>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                         <hr />
@@ -278,12 +192,9 @@
                             <div class="col-lg-9 col-sm-12">
                                 <div class="row mt-2">
                                     <div class="col-6">
-                                        <label
-                                            for="winlink.password"
-                                            class="form-label"
-                                            >Winlink Password</label
-                                        >
+                                        <label for="winlink.password" class="form-label" >Winlink Password</label>
                                         <div class="input-group">
+                                            <!-- text vs password -->
                                             <input
                                                 type="text"
                                                 name="winlink.password"
