@@ -40,7 +40,6 @@ function fetchSettings() {
     fetch("/configuration.json")
         .then((response) => response.json())
         .then((settings) => {
-            console.log("Loaded Settings: ", settings);
             loadSettings(settings);
         })
         .catch((err) => {
