@@ -40,6 +40,7 @@ function fetchSettings() {
     fetch("/configuration.json")
         .then((response) => response.json())
         .then((settings) => {
+            console.log("Loaded Settings: ", settings);
             loadSettings(settings);
         })
         .catch((err) => {
@@ -49,20 +50,19 @@ function fetchSettings() {
         });
 }
 
-const alwaysOnCheckbox = document.querySelector(
-    'input[name="display.alwaysOn"]'
-);
+const ecoModeCheckbox = document.querySelector('input[name="display.ecoMode"]');
 const timeoutInput = document.querySelector('input[name="display.timeout"]');
 
-alwaysOnCheckbox.addEventListener("change", function () {
-    timeoutInput.disabled = this.checked;
+ecoModeCheckbox.addEventListener("change", function () {
+    timeoutInput.disabled = !this.checked;
 });
 
-
+// BORRAR!!!
 logCheckbox.addEventListener("change", function () {
     serverField.disabled = !this.checked;
     portField.disabled = !this.checked;
 });
+// BORRAR!!!
 
 function loadSettings(settings) {
     currentSettings = settings;
@@ -86,7 +86,7 @@ function loadSettings(settings) {
     document.getElementById("display.timeout").value                    = settings.display.timeout;
     document.getElementById("display.turn180").checked                  = settings.display.turn180;
 
-    if (settings.display.alwaysOn) {
+    if (settings.display.ecoMode) {
         timeoutInput.disabled = true;
     }
 
