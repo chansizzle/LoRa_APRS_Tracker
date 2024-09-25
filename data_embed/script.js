@@ -50,19 +50,51 @@ function fetchSettings() {
         });
 }
 
+// timeout box enable
 const ecoModeCheckbox = document.querySelector('input[name="display.ecoMode"]');
 const timeoutInput = document.querySelector('input[name="display.timeout"]');
-
 ecoModeCheckbox.addEventListener("change", function () {
     timeoutInput.disabled = !this.checked;
 });
 
-// BORRAR!!!
-logCheckbox.addEventListener("change", function () {
-    serverField.disabled = !this.checked;
-    portField.disabled = !this.checked;
+// pttTrigger boxes enable
+const pttTriggerCheckbox    = document.querySelector('input[name="ptt.active"]');
+const pttPinInput           = document.querySelector('input[name="ptt.io_pin"]');
+const pttPreDelayInput      = document.querySelector('input[name="ptt.preDelay"]');
+const pttPostDelayInput     = document.querySelector('input[name="ptt.postDelay"]');
+pttTriggerCheckbox.addEventListener("change", function () {
+    pttPinInput.disabled        = !this.checked;
+    pttPreDelayInput.disabled   = !this.checked;
+    pttPostDelayInput.disabled  = !this.checked;
 });
-// BORRAR!!!
+
+// notifications boxes enable
+const ledTxCheckbox         = document.querySelector('input[name="notification.ledTx"]');
+const letTxPinInput         = document.querySelector('input[name="notification.ledTxPin"]');
+ledTxCheckbox.addEventListener("change", function () {
+    letTxPinInput.disabled          = !this.checked;
+});
+
+const ledMessageCheckbox    = document.querySelector('input[name="notification.ledMessage"]');
+const ledMessagePinInput    = document.querySelector('input[name="notification.ledMessagePin"]');
+ledMessageCheckbox.addEventListener("change", function () {
+    ledMessagePinInput.disabled     = !this.checked;
+});
+
+const ledFlashlightCheckbox = document.querySelector('input[name="notification.ledFlashlight"]');
+const ledFlashlightPinInput = document.querySelector('input[name="notification.ledFlashlightPin"]');
+ledFlashlightCheckbox.addEventListener("change", function () {
+    ledFlashlightPinInput.disabled  = !this.checked;
+});
+
+const buzzerActiveCheckbox  = document.querySelector('input[name="notification.buzzerActive"]');
+const buzzerPinToneInput    = document.querySelector('input[name="notification.buzzerPinTone"]');
+const buzzerPinVccInput     = document.querySelector('input[name="notification.buzzerPinVcc"]');
+buzzerActiveCheckbox.addEventListener("change", function () {
+    buzzerPinToneInput.disabled     = !this.checked;
+    buzzerPinVccInput.disabled      = !this.checked;
+});
+
 
 function loadSettings(settings) {
     currentSettings = settings;
@@ -85,7 +117,6 @@ function loadSettings(settings) {
     document.getElementById("display.ecoMode").checked                  = settings.display.ecoMode;
     document.getElementById("display.timeout").value                    = settings.display.timeout;
     document.getElementById("display.turn180").checked                  = settings.display.turn180;
-
     if (settings.display.ecoMode) {
         timeoutInput.disabled = true;
     }
@@ -119,6 +150,19 @@ function loadSettings(settings) {
     document.getElementById("notification.stationBeep").checked         = settings.notification.stationBeep;
     document.getElementById("notification.lowBatteryBeep").checked      = settings.notification.lowBatteryBeep;
     document.getElementById("notification.shutDownBeep").checked        = settings.notification.shutDownBeep;
+    if (settings.notification.ledTx) {
+        letTxPinInput.disabled          = true;
+    }
+    if (settings.notification.ledMessage) {
+        ledMessagePinInput.disabled     = true;
+    }
+    if (settings.notification.ledFlashlight) {
+        ledFlashlightPinInput.disabled  = true;
+    }
+    if (settings.notification.buzzerActive) {
+        buzzerPinToneInput.disabled     = true;
+        buzzerPinVccInput.disabled      = true;
+    }
 
     // LORA
 
@@ -132,6 +176,12 @@ function loadSettings(settings) {
     document.getElementById("ptt.preDelay").value                       = settings.ptt.preDelay;
     document.getElementById("ptt.postDelay").value                      = settings.ptt.postDelay;
     document.getElementById("ptt.reverse").checked                      = settings.ptt.reverse;
+    if (settings.ptt.active) {
+        pttPinInput.disabled        = true;
+        pttPreDelayInput.disabled   = true;
+        pttPostDelayInput.disabled  = true;
+    }
+
 
     // WiFi AP
     document.getElementById("wifiAP.password").value                    = settings.wifiAP.password;
@@ -164,9 +214,7 @@ document.getElementById('reboot').addEventListener('click', function (e) {
     showToast("Your device will be rebooted in a while");
 });
 
-const bmeCheckbox = document.querySelector("input[name='bme.active']");
 
-const stationModeSelect = document.querySelector("select[name='stationMode']");
 
 function toggleFields() {
     const sendExternalVoltageCheckbox = document.querySelector(
