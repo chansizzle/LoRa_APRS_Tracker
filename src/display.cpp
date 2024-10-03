@@ -18,7 +18,7 @@ String currentSymbol, lastSymbol, lastHeader;
         #define smallSizeFont   1
         #define lineSpacing     12
     #endif
-    #ifdef TTGO_T_DECK_GPS
+    #if defined(TTGO_T_DECK_GPS) || defined(TTGO_T_DECK_PLUS)
         #define bigSizeFont     4
         #define smallSizeFont   2
         #define lineSpacing     22
