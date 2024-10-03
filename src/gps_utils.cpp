@@ -15,7 +15,7 @@
 #ifdef HIGH_GPS_BAUDRATE
     #define GPS_BAUD  115200
 #else
-    #define GPS_BAUD  9600
+    #define GPS_BAUD  9600// 38400
 #endif
 
 extern Configuration        Config;
@@ -64,6 +64,9 @@ namespace GPS_Utils {
         if (disableGPS) return;
         while (neo6m_gps.available() > 0) {
             gps.encode(neo6m_gps.read());
+            //
+            Serial.print(neo6m_gps.read());
+            //
         }
     }
 
