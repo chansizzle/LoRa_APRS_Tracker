@@ -153,7 +153,47 @@ void setup() {
     menuDisplay = 0;
 }
 
+/*uint8_t pm2Command[] = {        // get Power Mode Command
+    0xB5, 0x62, 0x06, 0x3B, 0x00, 0x00, 0x41, 0xBB
+};*/
+
+//bool testGps = true;
 void loop() {
+
+    /*if (testGps) {
+        GPS_Utils::sendUBXCommand(pm2Command, sizeof(pm2Command));
+        testGps = false;
+    }
+    
+    if (neo6m_gps.available()) {
+        uint8_t response[40];  // Size of CFG-PM2 response is 40 bytes
+        int len = neo6m_gps.readBytes(response, sizeof(response));
+
+        // Check if we got the correct UBX-CFG-PM2 response
+        if (len == 40 && response[0] == 0xB5 && response[1] == 0x62 && response[2] == 0x06 && response[3] == 0x3B) {
+            // Extract the power mode
+            uint32_t powerMode = response[16];  // powerSetupValue is at byte 16
+            Serial.print("Current Power Mode: ");
+            Serial.println(powerMode, HEX);  // Display the power mode in hex
+
+            // Interpret power mode:
+            switch (powerMode) {
+                case 0x00:
+                    Serial.println("Continuous Mode (Full Power Mode)");
+                    break;
+                case 0x01:
+                    Serial.println("Power Save Mode (Eco Mode)");
+                    break;
+                case 0x02:
+                    Serial.println("Trickle Power Mode");
+                    break;
+                default:
+                    Serial.println("Unknown Mode");
+                    break;
+            }
+        }
+    }*/
+
     currentBeacon = &Config.beacons[myBeaconsIndex];
     if (statusState) {
         if (Config.validateConfigFile(currentBeacon->callsign)) {

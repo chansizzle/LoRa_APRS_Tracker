@@ -5,6 +5,7 @@
 
 namespace GPS_Utils {
 
+    void sendUBXCommand(uint8_t *msg, uint8_t len);
     void setup();
     void calculateDistanceCourse(const String& callsign, double checkpointLatitude, double checkPointLongitude);
     void getData();
